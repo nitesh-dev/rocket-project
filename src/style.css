@@ -1,0 +1,18 @@
+body{
+  margin: 0;
+  display: flex;
+  min-height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+
+#canvas-container{
+  width: 800px;
+  height: 400px;
+  overflow: hidden;
+}
+
+#color{
+  background-color: #f3e30013;
+}
