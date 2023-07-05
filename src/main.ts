@@ -87,8 +87,8 @@ function rocketFlame(scale: number) {
   const animatedSprite = new PIXI.AnimatedSprite(textures)
 
   // Set animation properties
-  animatedSprite.animationSpeed = 0.1; // Adjust the animation speed as needed
-  animatedSprite.loop = true; // Set to true if you want the animation to loop
+  animatedSprite.animationSpeed = 0.1; 
+  animatedSprite.loop = true; 
 
   animatedSprite.anchor.set(1.4, 0.45)
   // Start the animation
