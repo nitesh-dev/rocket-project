@@ -27,7 +27,8 @@ const start = new PIXI.Point(offset, app.screen.bottom - offset)
 const control = new PIXI.Point(app.screen.right - offset, app.screen.bottom - offset)
 const end = new PIXI.Point(app.screen.right - offset, offset)
 
-const rocket = createRocket()
+let rocket: PIXI.Container<PIXI.DisplayObject> | null = createRocket()
+let blast: PIXI.AnimatedSprite | null = null
 
 
 
@@ -46,6 +47,43 @@ function createRocket() {
   container.addChild(gameObject)
 
   return container
+}
+
+function destroyRocket(){
+  if(rocket == null) return
+  blast = createBlast()
+  blast.x = rocket.x
+  blast.y = rocket.y
+  app.stage.addChild(blast)
+
+  // remove rocket
+  app.stage.removeChild(rocket)
+  rocket = null
+}
+
+function createBlast(){
+  const scale = 0.3
+  const textures = Array<PIXI.Texture<PIXI.Resource>>();
+  textures.push(PIXI.Texture.from('./blast/blast1.png'))
+  textures.push(PIXI.Texture.from('./blast/blast2.png'))
+  textures.push(PIXI.Texture.from('./blast/blast3.png'))
+  textures.push(PIXI.Texture.from('./blast/blast4.png'))
+
+  const animatedSprite = new PIXI.AnimatedSprite(textures)
+
+  // Set animation properties
+  animatedSprite.animationSpeed = 0.1;
+  animatedSprite.loop = false;
+
+  animatedSprite.anchor.set(0.5)
+  // Start the animation
+  animatedSprite.play();
+
+  // Optionally, you can position and scale the sprite
+  // animatedSprite.position.set(x, y); // Set the desired position
+  animatedSprite.scale.set(scale, scale);
+
+  return animatedSprite
 }
 
 
@@ -71,11 +109,6 @@ function trailContainer() {
   const container = new PIXI.Container();
   container.addChild(drawRocketTail(15, 0xf3e300, 0.2))
   container.addChild(drawRocketTail(2, 0xf3e300, 1))
-
-  container.mask = new PIXI.Graphics()
-    .beginFill(0x000000)
-    .drawRect(offset, offset, rocket.x, app.screen.bottom)
-    .endFill();
   return container
 }
 
@@ -105,9 +138,12 @@ function rocketFlame(scale: number) {
 }
 
 
+setTimeout(destroyRocket, 9000)
 
 // update every frame
 function main(delta: number) {
+  if(rocket == null) return
+
   delta = delta / 60               // to second
 
   time += delta
@@ -122,7 +158,7 @@ function main(delta: number) {
   // update train mask
   trail.mask = new PIXI.Graphics()
     .beginFill(0x000000)
-    .drawRect(offset, rocket.y, rocket.x - rocket.width / 3, app.screen.bottom)
+    .drawRect(offset, rocket.y - 15, rocket.x - rocket.width / 3, app.screen.bottom)
     .endFill();
 }
 
