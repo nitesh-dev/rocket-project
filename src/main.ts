@@ -8,13 +8,14 @@ const canvasContainer = document.querySelector('#canvas-container') as HTMLDivEl
 const app = new PIXI.Application({
   antialias: true,
   width: canvasContainer.clientWidth,
-  height: canvasContainer.clientHeight
+  height: canvasContainer.clientHeight,
+  backgroundAlpha: 0
 });
+
+(app.view as HTMLCanvasElement).style.backgroundColor = "transparent"
 
 canvasContainer.appendChild(app.view as any);
 
-
-const astroEjectDuration = 2
 
 // temp data
 const duration = 10
@@ -28,9 +29,6 @@ const end = new PIXI.Point(app.screen.right - offset, offset)
 
 const rocket = createRocket()
 
-let astroObjects = Array<AstroData>()
-
-
 
 
 function createRocket() {
@@ -39,8 +37,8 @@ function createRocket() {
   const flame = rocketFlame(0.1)
 
   const gameObject = PIXI.Sprite.from('./rocket.png')
-  gameObject.scale.x = 0.3
-  gameObject.scale.y = 0.3
+  gameObject.scale.x = 0.15
+  gameObject.scale.y = 0.15
 
   // center the sprite's anchor point
   gameObject.anchor.set(0.5)
@@ -51,32 +49,6 @@ function createRocket() {
 }
 
 
-
-function createAstronaut() {
-  const scale = 0.4
-  const images = ['./astronauts/astronaut1.png', './astronauts/astronaut2.png', './astronauts/astronaut3.png', './astronauts/astronaut4.png', './astronauts/astronaut5.png', './astronauts/astronaut6.png']
-
-  // select random image 
-  const rand = Math.round(Math.random() * (images.length - 1))
-
-  const astroObject = PIXI.Sprite.from(images[rand]);
-  astroObject.anchor.set(0.5)
-  astroObject.scale.x = scale
-  astroObject.scale.y = scale
-
-  astroObject.position.x = rocket.x
-  astroObject.position.y = rocket.y
-
-  const fireDirection = Math.round(Math.random() * 120) + 210
-
-  let rotationSpeed = (Math.round(Math.random() * 360) - 180) * 2
-
-  const astroData = new AstroData(astroEjectDuration, rotationSpeed, fireDirection, astroObject)
-  astroObjects.push(astroData)
-
-  app.stage.addChildAt(astroObject, app.stage.children.length - 1)
-
-}
 
 
 function drawRocketTail(width: number, color: number, alpha: number) {
@@ -133,7 +105,6 @@ function rocketFlame(scale: number) {
 }
 
 
-setInterval(createAstronaut, 200)
 
 // update every frame
 function main(delta: number) {
@@ -147,12 +118,6 @@ function main(delta: number) {
 
   rocket.x = pos.x
   rocket.y = pos.y
-
-  // update ejected astronauts
-
-  astroObjects.forEach(astro => {
-    astro.update(delta)
-  });
 
   // update train mask
   trail.mask = new PIXI.Graphics()
@@ -197,59 +162,3 @@ function tangentToDegree(t: number) {
 app.ticker.add(main);
 app.stage.addChild(trail);
 app.stage.addChild(rocket)
-
-
-
-
-
-class AstroData {
-  private timeLeft = 0
-  private sprite: PIXI.Sprite | null = null
-  private rotation = 360                            // rotation per second
-  private fireDirection = 270
-  private fireVelocity = 1
-
-  constructor(duration: number, rotation: number, direction: number, sprite: PIXI.Sprite) {
-    this.timeLeft = duration
-    this.rotation = rotation
-    this.sprite = sprite
-    this.fireDirection = direction
-  }
-
-  update(deltaTime: number) {
-
-    this.timeLeft -= deltaTime
-    if (this.timeLeft < 0) {
-
-      this.timeLeft = 0
-      this.destroy()
-    } else {
-
-      this.updateAnimation(deltaTime)
-    }
-  }
-
-  private updateAnimation(deltaTime: number) {
-    if (this.sprite == null) return
-
-    // changing rotation
-    this.sprite.angle += this.rotation * deltaTime
-
-    // moving sprite
-    const angleInRadians = PIXI.DEG_TO_RAD * this.fireDirection;
-    const velocityX = Math.cos(angleInRadians) * this.fireVelocity;
-    const velocityY = Math.sin(angleInRadians) * this.fireVelocity;
-
-    this.sprite.x += velocityX
-    this.sprite.y -= velocityY
-
-    // changing opacity
-    this.sprite.alpha = this.timeLeft / astroEjectDuration
-  }
-
-  private destroy() {
-    if (this.sprite == null) return
-    app.stage.removeChild(this.sprite)
-    astroObjects.splice(astroObjects.indexOf(this), 1)
-  }
-}
