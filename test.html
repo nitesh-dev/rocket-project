@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://pixijs.download/release/pixi.js"></script>
+    <title>Document</title>
+</head>
+
+<body>
+
+    <div id="canvas-container"></div>
+    <button onclick="createAstronaut">Create</button>
+    <script>
+
+        var canvasContainer = document.querySelector('#canvas-container');
+        var app = new PIXI.Application({
+            antialias: true,
+            width: canvasContainer.clientWidth,
+            height: canvasContainer.clientHeight,
+            backgroundAlpha: 0
+        });
+        app.view.style.backgroundColor = "transparent";
+        canvasContainer.appendChild(app.view);
+        var duration = 10;
+        var time = 0;
+        var offset = 40;
+        var start = new PIXI.Point(offset, app.screen.bottom - offset);
+        var control = new PIXI.Point(app.screen.right - offset, app.screen.bottom - offset);
+        var end = new PIXI.Point(app.screen.right - offset, offset);
+        var rocket = null;
+        var blast = null;
+        var trail = trailContainer();
+        restart(10);
+        function restart(animationDuration) {
+            duration = animationDuration;
+            time = 0;
+            rocket = createRocket();
+            app.stage.addChild(rocket);
+        }
+        function createRocket() {
+            var container = new PIXI.Container();
+            var flame = rocketFlame(0.1);
+            var gameObject = PIXI.Sprite.from('./public/rocket.png');
+            gameObject.scale.x = 0.15;
+            gameObject.scale.y = 0.15;
+            // center the sprite's anchor point
+            gameObject.anchor.set(0.5);
+            container.addChild(flame);
+            container.addChild(gameObject);
+            return container;
+        }
+        function destroyRocket() {
+            if (rocket == null)
+                return;
+            blast = createBlast();
+            blast.x = rocket.x;
+            blast.y = rocket.y;
+            app.stage.addChild(blast);
+            // remove rocket
+            app.stage.removeChild(rocket);
+            rocket = null;
+        }
+        function createBlast() {
+            var scale = 0.3;
+            var textures = Array();
+            textures.push(PIXI.Texture.from('./public/blast/blast1.png'));
+            textures.push(PIXI.Texture.from('./public/blast/blast2.png'));
+            textures.push(PIXI.Texture.from('./public/blast/blast3.png'));
+            textures.push(PIXI.Texture.from('./public/blast/blast4.png'));
+            var animatedSprite = new PIXI.AnimatedSprite(textures);
+            // Set animation properties
+            animatedSprite.animationSpeed = 0.1;
+            animatedSprite.loop = false;
+            animatedSprite.anchor.set(0.5);
+            // Start the animation
+            animatedSprite.play();
+            // Optionally, you can position and scale the sprite
+            // animatedSprite.position.set(x, y); // Set the desired position
+            animatedSprite.scale.set(scale, scale);
+            return animatedSprite;
+        }
+        function drawRocketTail(width, color, alpha) {
+            var graphics = new PIXI.Graphics();
+            graphics.lineStyle(width, color, alpha);
+            graphics.moveTo(start.x, start.y);
+            graphics.quadraticCurveTo(control.x, control.y, end.x, end.y);
+            return graphics;
+        }
+        function trailContainer() {
+            var container = new PIXI.Container();
+            container.addChild(drawRocketTail(15, 0xf3e300, 0.2));
+            container.addChild(drawRocketTail(2, 0xf3e300, 1));
+            return container;
+        }
+        function rocketFlame(scale) {
+            var textures = Array();
+            textures.push(PIXI.Texture.from('./public/flame1.png'));
+            textures.push(PIXI.Texture.from('./public/flame2.png'));
+            textures.push(PIXI.Texture.from('./public/flame3.png'));
+            var animatedSprite = new PIXI.AnimatedSprite(textures);
+            // Set animation properties
+            animatedSprite.animationSpeed = 0.1;
+            animatedSprite.loop = true;
+            animatedSprite.anchor.set(1.4, 0.45);
+            // Start the animation
+            animatedSprite.play();
+            // Optionally, you can position and scale the sprite
+            // animatedSprite.position.set(x, y); // Set the desired position
+            animatedSprite.scale.set(scale, scale);
+            return animatedSprite;
+        }
+        // update every frame
+        function main(delta) {
+            if (rocket == null) {
+                // update train mask
+                trail.mask = new PIXI.Graphics()
+                    .beginFill(0x000000)
+                    .drawRect(offset, offset, 0, app.screen.bottom)
+                    .endFill();
+                return;
+            }
+            delta = delta / 60;
+            time += delta;
+            if (time > duration)
+                time = duration;
+            rocket.angle = tangentToDegree(mapToOne(time, duration));
+            var pos = getCurvePoint(mapToOne(time, duration));
+            rocket.x = pos.x;
+            rocket.y = pos.y;
+            // update train mask
+            trail.mask = new PIXI.Graphics()
+                .beginFill(0x000000)
+                .drawRect(offset, rocket.y - 15, rocket.x - rocket.width / 3, app.screen.bottom)
+                .endFill();
+        }
+        function getCurvePoint(t) {
+            var x = (1 - t) * (1 - t) * start.x + 2 * (1 - t) * t * control.x + t * t * end.x;
+            var y = (1 - t) * (1 - t) * start.y + 2 * (1 - t) * t * control.y + t * t * end.y;
+            return { x: x, y: y };
+        }
+        // map the value between 0 to 1
+        function mapToOne(value, max) {
+            return value / max;
+        }
+        function tangentToDegree(t) {
+            var tangent = new PIXI.Point();
+            // Calculate the direction vector at t
+            tangent.x = 2 * (1 - t) * (control.x - start.x) + 2 * t * (end.x - control.x);
+            tangent.y = 2 * (1 - t) * (control.y - start.y) + 2 * t * (end.y - control.y);
+            // Calculate the angle in radians
+            var angleRadians = Math.atan2(tangent.y, tangent.x);
+            // Convert the angle to degrees
+            var angleDegrees = angleRadians * (180 / Math.PI);
+            return angleDegrees;
+        }
+        // Listen for animate update
+        app.ticker.add(main);
+        app.stage.addChild(trail);
+
+    </script>
+</body>
+
+</html>

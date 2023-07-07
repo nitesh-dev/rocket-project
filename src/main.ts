@@ -17,25 +17,35 @@ const app = new PIXI.Application({
 canvasContainer.appendChild(app.view as any);
 
 
-// temp data
-const duration = 10
+let duration = 10
 let time = 0
 
 const offset = 40
-
 const start = new PIXI.Point(offset, app.screen.bottom - offset)
 const control = new PIXI.Point(app.screen.right - offset, app.screen.bottom - offset)
 const end = new PIXI.Point(app.screen.right - offset, offset)
 
-let rocket: PIXI.Container<PIXI.DisplayObject> | null = createRocket()
+let rocket: PIXI.Container<PIXI.DisplayObject> | null = null
 let blast: PIXI.AnimatedSprite | null = null
+let flame: PIXI.AnimatedSprite | null = null
+const trail = trailContainer()
+app.stage.addChild(trail);
 
+restart(15)
+function restart(animationDuration: number){
+  duration = animationDuration
+  time = 0
+  rocket = createRocket()
+  app.stage.addChild(rocket)
+
+  setTimeout(destroyRocket, 14000)
+}
 
 
 function createRocket() {
   const container = new PIXI.Container();
 
-  const flame = rocketFlame(0.1)
+  flame = rocketFlame(0.1)
 
   const gameObject = PIXI.Sprite.from('./rocket.png')
   gameObject.scale.x = 0.15
@@ -49,8 +59,8 @@ function createRocket() {
   return container
 }
 
-function destroyRocket(){
-  if(rocket == null) return
+function destroyRocket() {
+  if (rocket == null) return
   blast = createBlast()
   blast.x = rocket.x
   blast.y = rocket.y
@@ -61,7 +71,7 @@ function destroyRocket(){
   rocket = null
 }
 
-function createBlast(){
+function createBlast() {
   const scale = 0.3
   const textures = Array<PIXI.Texture<PIXI.Resource>>();
   textures.push(PIXI.Texture.from('./blast/blast1.png'))
@@ -87,8 +97,6 @@ function createBlast(){
 }
 
 
-
-
 function drawRocketTail(width: number, color: number, alpha: number) {
 
   const graphics = new PIXI.Graphics();
@@ -103,48 +111,51 @@ function drawRocketTail(width: number, color: number, alpha: number) {
 
 }
 
-const trail = trailContainer()
 
 function trailContainer() {
   const container = new PIXI.Container();
   container.addChild(drawRocketTail(15, 0xf3e300, 0.2))
-  container.addChild(drawRocketTail(2, 0xf3e300, 1))
+  container.addChild(drawRocketTail(4, 0xf3e300, 1))
   return container
 }
 
 
 function rocketFlame(scale: number) {
   const textures = Array<PIXI.Texture<PIXI.Resource>>();
-  textures.push(PIXI.Texture.from('./flame1.png'))
-  textures.push(PIXI.Texture.from('./flame2.png'))
-  textures.push(PIXI.Texture.from('./flame3.png'))
+  textures.push(PIXI.Texture.from('./flame/flame1.png'))
+  textures.push(PIXI.Texture.from('./flame/flame2.png'))
+  textures.push(PIXI.Texture.from('./flame/flame3.png'))
 
-  const animatedSprite = new PIXI.AnimatedSprite(textures)
+  const animatedSprite = new PIXI.AnimatedSprite(textures);
+  animatedSprite.angle = 90
 
   // Set animation properties
   animatedSprite.animationSpeed = 0.1;
-  animatedSprite.loop = true;
+  animatedSprite.loop = false;
 
-  animatedSprite.anchor.set(1.4, 0.45)
+  animatedSprite.anchor.set(0.5, -0.2)
   // Start the animation
   animatedSprite.play();
-
-  // Optionally, you can position and scale the sprite
-  // animatedSprite.position.set(x, y); // Set the desired position
+ 
   animatedSprite.scale.set(scale, scale);
-
 
   return animatedSprite
 }
 
 
-setTimeout(destroyRocket, 9000)
-
 // update every frame
 function main(delta: number) {
-  if(rocket == null) return
+  if (rocket == null) {
 
-  delta = delta / 60               // to second
+    // update train mask
+    trail.mask = new PIXI.Graphics()
+      .beginFill(0x000000)
+      .drawRect(offset, offset, 0 , app.screen.bottom)
+      .endFill();
+    return
+  }
+
+  delta = delta / 60
 
   time += delta
   if (time > duration) time = duration
@@ -155,11 +166,25 @@ function main(delta: number) {
   rocket.x = pos.x
   rocket.y = pos.y
 
+  // change rocket flame
+  flame?.gotoAndStop(getRocketFlameIndex(time))
+
   // update train mask
   trail.mask = new PIXI.Graphics()
     .beginFill(0x000000)
-    .drawRect(offset, rocket.y - 15, rocket.x - rocket.width / 3, app.screen.bottom)
+    .drawRect(offset, rocket.y - 15, rocket.x - rocket.width / 4, app.screen.bottom)
     .endFill();
+}
+
+function getRocketFlameIndex(timeElapsed: number){
+  const subTime = duration / 3              // because we have 3 frame for flame
+  if(timeElapsed < subTime){
+    return 0
+  }else if(timeElapsed < subTime * 2){
+    return 1
+  }else{
+    return 2
+  }
 }
 
 
@@ -196,5 +221,3 @@ function tangentToDegree(t: number) {
 
 // Listen for animate update
 app.ticker.add(main);
-app.stage.addChild(trail);
-app.stage.addChild(rocket)
