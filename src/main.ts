@@ -31,6 +31,9 @@ let blast: PIXI.AnimatedSprite | null = null
 let flame: PIXI.AnimatedSprite | null = null
 let isRocketMoving = false
 
+const rocketAnimation = 1
+const rocketAnimationMaxDis = 30
+
 let background = await createBackground()
 
 
@@ -204,18 +207,20 @@ function main(delta: number) {
 
   delta = delta / 60
 
+  // animate the rocket if it is ideal
+  if(rocket != null && isRocketMoving == false){
+
+  }
+
   if (isRocketMoving == false || rocket == null) return
 
   time += delta
   if (time > duration) time = duration
 
   // move background if rocket reach the limit
-  if (time == duration) {
-    background.y += 20 * delta
-    if (background.y > 0) {
-      background.y = -backgroundHeight / 2
-    }
-
+  background.y += 100 * delta
+  if (background.y > 0) {
+    background.y = -backgroundHeight / 2
   }
 
   rocket.angle = tangentToDegree(mapToOne(time, duration))
@@ -232,6 +237,9 @@ function main(delta: number) {
 }
 
 
+function easingFunction(progress: number) {
+  return Math.sin(progress * Math.PI * 2);
+}
 
 function getCurvePoint(t: number) {
   const x = (1 - t) * (1 - t) * start.x + 2 * (1 - t) * t * control.x + t * t * end.x;
