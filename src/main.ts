@@ -70,7 +70,7 @@ setTimeout(() => {restart(5)}, 18000)
 function createRocket() {
   const container = new PIXI.Container();
 
-  flame = rocketFlame(0.1)
+  flame = rocketFlame(0.25)
 
   const gameObject = PIXI.Sprite.from('./rocket.png')
   gameObject.scale.x = 0.15
@@ -176,15 +176,19 @@ function rocketFlame(scale: number) {
   textures.push(PIXI.Texture.from('./flame/flame1.png'))
   textures.push(PIXI.Texture.from('./flame/flame2.png'))
   textures.push(PIXI.Texture.from('./flame/flame3.png'))
+  textures.push(PIXI.Texture.from('./flame/flame4.png'))
+  textures.push(PIXI.Texture.from('./flame/flame5.png'))
+  textures.push(PIXI.Texture.from('./flame/flame6.png'))
+  textures.push(PIXI.Texture.from('./flame/flame7.png'))
 
   const animatedSprite = new PIXI.AnimatedSprite(textures);
-  animatedSprite.angle = 90
+
 
   // Set animation properties
-  animatedSprite.animationSpeed = 1;
+  animatedSprite.animationSpeed = 0.2;
   animatedSprite.loop = true;
 
-  animatedSprite.anchor.set(0.5, -0.2)
+  animatedSprite.anchor.set(1.35, 0.5)
   // Start the animation
   animatedSprite.play();
 
