@@ -21,7 +21,7 @@ let duration = 10
 let time = 0
 
 let backgroundHeight = 0
-const offset = 40
+const offset = 60
 const start = new PIXI.Point(offset, app.screen.bottom - offset)
 const control = new PIXI.Point(app.screen.right - offset, app.screen.bottom - offset)
 const end = new PIXI.Point(app.screen.right - offset, offset)
@@ -29,6 +29,7 @@ const end = new PIXI.Point(app.screen.right - offset, offset)
 let rocket: PIXI.Container<PIXI.DisplayObject> | null = null
 let blast: PIXI.AnimatedSprite | null = null
 let flame: PIXI.AnimatedSprite | null = null
+let isRocketMoving = false
 
 let background = await createBackground()
 
@@ -36,15 +37,31 @@ let background = await createBackground()
 const trail = trailContainer()
 app.stage.addChild(trail);
 
-restart(2)
+restart(5)
+
 function restart(animationDuration: number) {
   duration = animationDuration
   time = 0
+  isRocketMoving = false
   rocket = createRocket()
   app.stage.addChild(rocket)
 
-  // setTimeout(destroyRocket, 14000)
+  rocket.angle = tangentToDegree(mapToOne(time, duration))
+  let pos = getCurvePoint(mapToOne(time, duration))
+
+  rocket.x = pos.x
+  rocket.y = pos.y
+
+  setTimeout(startRocket, 2000)
+  setTimeout(destroyRocket, 15000)
 }
+
+function startRocket(){
+  isRocketMoving = true
+}
+
+
+setTimeout(() => {restart(5)}, 18000)
 
 
 function createRocket() {
@@ -119,7 +136,7 @@ function drawRocketTail(width: number, color: number, alpha: number) {
 
 async function createBackground() {
   const container = new PIXI.Container();
-  const texture = await PIXI.Assets.load('./space.png')
+  const texture = await PIXI.Assets.load('./space.jpg')
   const background1 = PIXI.Sprite.from(texture);
   const background2 = PIXI.Sprite.from(texture);
 
@@ -130,25 +147,23 @@ async function createBackground() {
 
   // calculating scale factor
   let scale = 1
-  if(app.screen.width > app.screen.height){
+  if (app.screen.width > app.screen.height) {
     scale = app.screen.width / container.width
-  }else{
+  } else {
     scale = app.screen.height / container.height
   }
-  
+
   container.scale.set(scale)
   backgroundHeight = container.height
   app.stage.addChild(container)
-
-  console.log(scale + "     " + container.width + '     ' + background1.height + "       " + backgroundHeight)
 
   return container
 }
 
 function trailContainer() {
   const container = new PIXI.Container();
-  container.addChild(drawRocketTail(15, 0xf3e300, 0.2))
-  container.addChild(drawRocketTail(4, 0xf3e300, 1))
+  container.addChild(drawRocketTail(15, 0xf3e300, 0.1))
+  container.addChild(drawRocketTail(2, 0xf3e300, 1))
   return container
 }
 
@@ -163,8 +178,8 @@ function rocketFlame(scale: number) {
   animatedSprite.angle = 90
 
   // Set animation properties
-  animatedSprite.animationSpeed = 0.1;
-  animatedSprite.loop = false;
+  animatedSprite.animationSpeed = 1;
+  animatedSprite.loop = true;
 
   animatedSprite.anchor.set(0.5, -0.2)
   // Start the animation
@@ -178,23 +193,21 @@ function rocketFlame(scale: number) {
 
 // update every frame
 function main(delta: number) {
-  if (rocket == null) {
+  if (rocket == null || isRocketMoving == false) {
 
     // update train mask
     trail.mask = new PIXI.Graphics()
       .beginFill(0x000000)
       .drawRect(offset, offset, 0, app.screen.bottom)
       .endFill();
-    return
   }
-
-  // console.log(background.y + "    " + backgroundHeight + "    " + background.width)
 
   delta = delta / 60
 
+  if (isRocketMoving == false || rocket == null) return
+
   time += delta
   if (time > duration) time = duration
-
 
   // move background if rocket reach the limit
   if (time == duration) {
@@ -202,19 +215,14 @@ function main(delta: number) {
     if (background.y > 0) {
       background.y = -backgroundHeight / 2
     }
-    
+
   }
-
-
 
   rocket.angle = tangentToDegree(mapToOne(time, duration))
   let pos = getCurvePoint(mapToOne(time, duration))
 
   rocket.x = pos.x
   rocket.y = pos.y
-
-  // change rocket flame
-  flame?.gotoAndStop(getRocketFlameIndex(time))
 
   // update train mask
   trail.mask = new PIXI.Graphics()
@@ -223,16 +231,6 @@ function main(delta: number) {
     .endFill();
 }
 
-function getRocketFlameIndex(timeElapsed: number) {
-  const subTime = duration / 3              // because we have 3 frame for flame
-  if (timeElapsed < subTime) {
-    return 0
-  } else if (timeElapsed < subTime * 2) {
-    return 1
-  } else {
-    return 2
-  }
-}
 
 
 function getCurvePoint(t: number) {
