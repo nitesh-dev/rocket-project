@@ -10,10 +10,32 @@
 
 <body>
   <div id="canvas-container">
-    <h2 class="blue"><span class="left">1.02</span><span class="right">X</span></h2>
+    <div>
+      <div class="game-loading">
+        <div class="loader">
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <p>WAITING FOR NEXT ROUND</p>
+      </div>
+
+      <div class="game-status hide">
+        <h3>GAME OVER</h3>
+        <h2 class="blue"><span class="left">1.02</span> <span class="right">X</span></h2>
+      </div>
+    </div>
+
   </div>
-  <button id="restart" >Restart</button>
-  <button id="start" >Start</button>
+  <button id="restart">Restart</button>
+  <button id="start">Start</button>
   <button id="destroy">Destroy</button>
 
   <script type="module" src="/src/main.ts"></script>

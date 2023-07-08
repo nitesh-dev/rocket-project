@@ -25,63 +25,103 @@ Note: you have to call setup() only once,
 
 
 // temp - this will be in html page
+
+const progressContainer = document.querySelector('#canvas-container .game-loading')
+const progressBars = document.querySelectorAll('#canvas-container .loader span')
+const gameStatusContainer = document.querySelector('#canvas-container .game-status')
+const gameStatusText = document.querySelector('#canvas-container .game-status h3')
+
+let isProgressing = false;
+toggleContainer()
+let progressCount = 0;
+
 (document.querySelector('#restart') as HTMLButtonElement).addEventListener('click', function () {
   score = 0
+  isProgressing = true
+  progressCount = 0
+  toggleContainer()
   restart(20)
 });
-(document.querySelector('#start') as HTMLButtonElement).addEventListener('click', function () {
-  startRocket()
-  isUpdateAllowed = true
-});
+
+
 (document.querySelector('#destroy') as HTMLButtonElement).addEventListener('click', function () {
   isUpdateAllowed = false
   isRocketDestroyed = true
+
   destroyRocket()
 });
 
-
-
 setInterval(updateScore, 250);
+setInterval(updateProgress, 1000)
+
+function updateProgress() {
+  if (isProgressing == false) return
+
+  // disabling all progress item
+  progressBars.forEach(element => {
+    element.className = ''
+  });
+
+  // enabling progress item
+  for (let index = 0; index < progressCount; index++) {
+    progressBars[index].className = 'visible'
+
+  }
+
+  progressCount += 1
+  if (progressCount > 10) {
+    isProgressing = false
+    toggleContainer()
+    startRocket()
+    isUpdateAllowed = true
+
+    // disabling all progress item
+    progressBars.forEach(element => {
+      element.className = ''
+    });
+  }
+
+}
+
+function toggleContainer() {
+  if (isProgressing) {
+    progressContainer?.classList.remove('hide')
+    gameStatusContainer?.classList.add('hide')
+  } else {
+    progressContainer?.classList.add('hide')
+    gameStatusContainer?.classList.remove('hide')
+  }
+
+}
+
 
 let score = 0
 let isUpdateAllowed = false
 let isRocketDestroyed = false
-const scoreParent = document.querySelector('#canvas-container>h2') as HTMLElement
-const scoreElement = document.querySelector('#canvas-container>h2 .left') as HTMLElement
+const scoreParent = document.querySelector('#canvas-container h2') as HTMLElement
+const scoreElement = document.querySelector('#canvas-container h2 .left') as HTMLElement
 
-let activeClassName = 'blue'
+
+// hype words
+const hypeValue = [3,5,8,10,15,20,25,35,50,75,100,300,500,750,1000]
+const hypeNames = ['NOT BAD', 'WOW', 'EXCELLENT', 'IMPRESSIVE', 'MARVELOUS', 'INCREDIBLE', 'SENSATIONAL', 'UNSTOPPABLE', 'DIVINE', 'STELLAR', 'REVOLUTIONARY', 'LEGENDARY', 'PHENOMENAL', 'OUT OF THE WORLD', 'GODLIKE']
 
 function updateScore() {
 
   if (isUpdateAllowed == true) {
-    score += Math.random() * 0.2
+    score += Math.random() * 0.4
     score = Math.round(score * 100) / 100       // rounding
   }
 
   scoreElement.innerText = score.toString()
-  if (score < 3) {
-    scoreParent.className = 'blue'
-    activeClassName = 'blue'
 
-  } else if (score < 6) {
-    scoreParent.classList.replace('blue', 'green')
-
-    // show animation
-    if (activeClassName != 'green') {
-      activeClassName = 'green'
-      showScaleAnimation()
+  for (let index = 0; index < hypeValue.length; index++) {
+    if(score < hypeValue[index]){
+      gameStatusText!!.innerHTML = hypeNames[index] 
+      break
     }
-
-
-  } else {
-    scoreParent.classList.replace('green', 'yellow')
-
-    // show animation
-    if (activeClassName != 'yellow') {
-      activeClassName = 'yellow'
-      showScaleAnimation()
-    }
-  }
+    
+  } 
 
   if (isRocketDestroyed && isUpdateAllowed == false) {
     scoreParent.className = 'red'
@@ -89,12 +129,14 @@ function updateScore() {
 
 }
 
-function showScaleAnimation() {
-  scoreParent.classList.remove('scale')
-  setTimeout(() => {
-    scoreParent.classList.add('scale')
-  }, 100)
-}
+// function showScaleAnimation() {
+//   scoreParent.classList.remove('scale')
+//   setTimeout(() => {
+//     scoreParent.classList.add('scale')
+//   }, 100)
+// }
+
+
 
 
 
