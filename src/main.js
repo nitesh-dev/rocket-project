@@ -1,6 +1,6 @@
 
-import './style.css'
-import * as PIXI from 'pixi.js'
+// import './style.css'
+// import * as PIXI from 'pixi.js'
 
 /* How to use
 
@@ -20,88 +20,11 @@ Note: you have to call setup() only once,
       use restart() to reset the ship
 
 
-*/
-
-
-// temp - this will be in html page
-(document.querySelector('#restart') as HTMLButtonElement).addEventListener('click', function () {
-  score = 0
-  restart(20)
-});
-(document.querySelector('#start') as HTMLButtonElement).addEventListener('click', function () {
-  startRocket()
-  isUpdateAllowed = true
-});
-(document.querySelector('#destroy') as HTMLButtonElement).addEventListener('click', function () {
-  isUpdateAllowed = false
-  isRocketDestroyed = true
-  destroyRocket()
-});
+*/ 
 
 
 
-setInterval(updateScore, 250);
-
-let score = 0
-let isUpdateAllowed = false
-let isRocketDestroyed = false
-const scoreParent = document.querySelector('#canvas-container>h2') as HTMLElement
-const scoreElement = document.querySelector('#canvas-container>h2 .left') as HTMLElement
-
-let activeClassName = 'blue'
-
-function updateScore() {
-
-  if (isUpdateAllowed == true) {
-    score += Math.random() * 0.2
-    score = Math.round(score * 100) / 100       // rounding
-  }
-
-  scoreElement.innerText = score.toString()
-  if (score < 3) {
-    scoreParent.className = 'blue'
-    activeClassName = 'blue'
-
-  } else if (score < 6) {
-    scoreParent.classList.replace('blue', 'green')
-
-    // show animation
-    if (activeClassName != 'green') {
-      activeClassName = 'green'
-      showScaleAnimation()
-    }
-
-
-  } else {
-    scoreParent.classList.replace('green', 'yellow')
-
-    // show animation
-    if (activeClassName != 'yellow') {
-      activeClassName = 'yellow'
-      showScaleAnimation()
-    }
-  }
-
-  if (isRocketDestroyed && isUpdateAllowed == false) {
-    scoreParent.className = 'red'
-  }
-
-}
-
-function showScaleAnimation() {
-  scoreParent.classList.remove('scale')
-  setTimeout(() => {
-    scoreParent.classList.add('scale')
-  }, 100)
-}
-
-
-
-
-
-
-
-const canvasContainer = document.querySelector('#canvas-container') as HTMLDivElement
+const canvasContainer = document.querySelector('#canvas-container')
 
 const app = new PIXI.Application({
   antialias: true,
@@ -110,51 +33,37 @@ const app = new PIXI.Application({
   backgroundAlpha: 0
 });
 
-(app.view as HTMLCanvasElement).style.backgroundColor = "transparent"
+app.view.style.backgroundColor = "transparent"
 
-canvasContainer.appendChild(app.view as any);
+canvasContainer.appendChild(app.view);
 
 
 let duration = 10
 let time = 0
 
-const backgroundSpeed = 80
 let backgroundHeight = 0
 const offset = 60
 const start = new PIXI.Point(offset, app.screen.bottom - offset)
 const control = new PIXI.Point(app.screen.right - offset, app.screen.bottom - offset)
 const end = new PIXI.Point(app.screen.right - offset, offset)
 
-let rocket: PIXI.Container<PIXI.DisplayObject> | null = null
-let blast: PIXI.AnimatedSprite | null = null
-let flame: PIXI.AnimatedSprite | null = null
+let rocket= null
+let blast = null
+let flame = null
 let isRocketMoving = false
-let background: PIXI.Container<PIXI.DisplayObject> | null = null
-let trail: PIXI.Container<PIXI.DisplayObject> | null = null
+let background = null
+let trail = null
 
 // const rocketAnimation = 1
 // const rocketAnimationMaxDis = 30
 
-setup('http://localhost:5173/space.jpg', 'http://localhost:5173/rocket.png', [
-  'http://localhost:5173/blast/blast1.png',
-  'http://localhost:5173/blast/blast2.png',
-  'http://localhost:5173/blast/blast3.png',
-  'http://localhost:5173/blast/blast4.png',
-], [
-  'http://localhost:5173/flame/flame1.png',
-  'http://localhost:5173/flame/flame2.png',
-  'http://localhost:5173/flame/flame3.png',
-  'http://localhost:5173/flame/flame4.png',
-  'http://localhost:5173/flame/flame5.png',
-  'http://localhost:5173/flame/flame6.png',
-  'http://localhost:5173/flame/flame7.png',
-])
+
 
 let rocketImage = ''
-let blastImages = Array<string>()
-let flameImages = Array<string>()
+let blastImages = Array()
+let flameImages = Array()
 
-async function setup(spaceImageUrl: string, rocketImageUrl: string, blastImagesUrl: Array<string>, flameImagesUrl: Array<string>) {
+async function setup(spaceImageUrl, rocketImageUrl, blastImagesUrl, flameImagesUrl) {
 
   background = await createBackground(spaceImageUrl)
   rocketImage = rocketImageUrl
@@ -163,19 +72,16 @@ async function setup(spaceImageUrl: string, rocketImageUrl: string, blastImagesU
 
   trail = trailContainer()
   app.stage.addChild(trail);
+  restart(10)
 }
 
 
 
-async function restart(animationDuration: number = 10) {
+async function restart(animationDuration) {
 
   // remove previous blast object if found
-  if (blast != null) {
+  if(blast != null){
     app.stage.removeChild(blast)
-  }
-
-  if (rocket != null) {
-    app.stage.removeChild(rocket)
   }
 
   duration = animationDuration
@@ -190,8 +96,6 @@ async function restart(animationDuration: number = 10) {
   rocket.x = pos.x
   rocket.y = pos.y
 
-  // setTimeout(startRocket, 2000)
-  // setTimeout(destroyRocket, 6000)
 }
 
 function startRocket() {
@@ -199,8 +103,7 @@ function startRocket() {
 }
 
 
-
-async function createRocket(image: string) {
+async function createRocket(image) {
   const container = new PIXI.Container();
 
   flame = await rocketFlame(0.25)
@@ -231,7 +134,7 @@ async function destroyRocket() {
 
 async function createBlast() {
   const scale = 0.3
-  const textures = Array<PIXI.Texture<PIXI.Resource>>();
+  const textures = Array();
 
   for (const url of blastImages) {
     const texture = await PIXI.Assets.load(url)
@@ -257,7 +160,7 @@ async function createBlast() {
 }
 
 
-function drawRocketTail(width: number, color: number, alpha: number) {
+function drawRocketTail(width, color, alpha) {
 
   const graphics = new PIXI.Graphics();
 
@@ -272,7 +175,7 @@ function drawRocketTail(width: number, color: number, alpha: number) {
 }
 
 
-async function createBackground(image: string) {
+async function createBackground(image) {
 
   const container = new PIXI.Container();
   const texture = await PIXI.Assets.load(image)
@@ -307,8 +210,8 @@ function trailContainer() {
 }
 
 
-async function rocketFlame(scale: number) {
-  const textures = Array<PIXI.Texture<PIXI.Resource>>();
+async function rocketFlame(scale) {
+  const textures = Array();
 
   for (const url of flameImages) {
     const texture = await PIXI.Assets.load(url)
@@ -338,15 +241,15 @@ async function rocketFlame(scale: number) {
 
 
 // update every frame
-function main(delta: number) {
+function main(delta) {
   if (rocket == null || isRocketMoving == false) {
 
     // update train mask
-    if (trail != null) {
+    if(trail != null){
       trail.mask = new PIXI.Graphics()
-        .beginFill(0x000000)
-        .drawRect(offset, offset, 0, app.screen.bottom)
-        .endFill();
+      .beginFill(0x000000)
+      .drawRect(offset, offset, 0, app.screen.bottom)
+      .endFill();
     }
   }
 
@@ -365,7 +268,7 @@ function main(delta: number) {
   // move background if rocket reach the limit
 
   if (background != null) {
-    background.y += backgroundSpeed * delta
+    background.y += 100 * delta
     if (background.y > 0) {
       background.y = -backgroundHeight / 2
     }
@@ -378,20 +281,20 @@ function main(delta: number) {
   rocket.y = pos.y
 
   // update train mask
-  if (trail != null) {
+  if(trail != null){
     trail.mask = new PIXI.Graphics()
-      .beginFill(0x000000)
-      .drawRect(offset, rocket.y - 15, rocket.x - rocket.width / 4, app.screen.bottom)
-      .endFill();
+    .beginFill(0x000000)
+    .drawRect(offset, rocket.y - 15, rocket.x - rocket.width / 4, app.screen.bottom)
+    .endFill();
   }
 }
 
 
-function easingFunction(progress: number) {
+function easingFunction(progress) {
   return Math.sin(progress * Math.PI * 2);
 }
 
-function getCurvePoint(t: number) {
+function getCurvePoint(t) {
   const x = (1 - t) * (1 - t) * start.x + 2 * (1 - t) * t * control.x + t * t * end.x;
   const y = (1 - t) * (1 - t) * start.y + 2 * (1 - t) * t * control.y + t * t * end.y;
   return { x: x, y: y }
@@ -399,12 +302,12 @@ function getCurvePoint(t: number) {
 
 
 // map the value between 0 to 1
-function mapToOne(value: number, max: number) {
+function mapToOne(value, max) {
   return value / max
 }
 
 
-function tangentToDegree(t: number) {
+function tangentToDegree(t) {
   const tangent = new PIXI.Point();
 
   // Calculate the direction vector at t

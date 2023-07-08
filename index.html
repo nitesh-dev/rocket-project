@@ -1,14 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + TS</title>
-  </head>
-  <body>
-    <div id="canvas-container"></div>
-    <button onclick="createAstronaut">Create</button>
-    <script type="module" src="/src/main.ts"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vite + TS</title>
+</head>
+
+<body>
+  <div id="canvas-container">
+    <h2 class="blue"><span class="left">1.02</span><span class="right">X</span></h2>
+  </div>
+  <button id="restart" >Restart</button>
+  <button id="start" >Start</button>
+  <button id="destroy">Destroy</button>
+
+  <script type="module" src="/src/main.ts"></script>
+  <script>
+    // setInterval(updateScore, 250)
+
+    // let score = 0.01
+
+    // const scoreParent = document.querySelector('#canvas-container>h2')
+    // const scoreElement = document.querySelector('#canvas-container>h2 .left')
+    // function updateScore() {
+    //   score += Math.random() * 0.4
+    //   score = Math.round(score * 100) / 100       // rounding
+    //   scoreElement.innerText = score
+
+    //   if (score < 3) {
+    //     scoreParent.className = 'blue'
+    //   } else if (score < 6) {
+    //     scoreParent.className = 'green'
+    //   } else {
+    //     scoreParent.className = 'yellow'
+    //   }
+
+    // }
+  </script>
+</body>
+
 </html>
