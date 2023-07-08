@@ -2,6 +2,7 @@
 import './style.css'
 import * as PIXI from 'pixi.js'
 
+
 /* How to use
 
 1) setup(spaceImageUrl, rocketImageUrl, blastImageUrls, flameImageUrls)
