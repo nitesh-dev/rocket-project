@@ -1,6 +1,7 @@
 
 import './style.css'
 import * as PIXI from 'pixi.js'
+import { sound } from '@pixi/sound';
 
 
 /* How to use
@@ -41,13 +42,16 @@ let progressCount = 0;
   progressCount = 0
   toggleContainer()
   restart(20)
+  playEngineSound(true)
 });
 
 
 (document.querySelector('#destroy') as HTMLButtonElement).addEventListener('click', function () {
   isUpdateAllowed = false
   isRocketDestroyed = true
-
+  playExplosionSound()
+  playGameOverSound()
+  playEngineSound(false)
   destroyRocket()
 });
 
@@ -102,7 +106,7 @@ const scoreElement = document.querySelector('#canvas-container h2 .left') as HTM
 
 
 // hype words
-const hypeValue = [3,5,8,10,15,20,25,35,50,75,100,300,500,750,1000]
+const hypeValue = [3, 5, 8, 10, 15, 20, 25, 35, 50, 75, 100, 300, 500, 750, 1000]
 const hypeNames = ['NOT BAD', 'WOW', 'EXCELLENT', 'IMPRESSIVE', 'MARVELOUS', 'INCREDIBLE', 'SENSATIONAL', 'UNSTOPPABLE', 'DIVINE', 'STELLAR', 'REVOLUTIONARY', 'LEGENDARY', 'PHENOMENAL', 'OUT OF THE WORLD', 'GODLIKE']
 
 function updateScore() {
@@ -115,12 +119,12 @@ function updateScore() {
   scoreElement.innerText = score.toString()
 
   for (let index = 0; index < hypeValue.length; index++) {
-    if(score < hypeValue[index]){
-      gameStatusText!!.innerHTML = hypeNames[index] 
+    if (score < hypeValue[index]) {
+      gameStatusText!!.innerHTML = hypeNames[index]
       break
     }
-    
-  } 
+
+  }
 
   if (isRocketDestroyed && isUpdateAllowed == false) {
     gameStatusText!!.innerHTML = 'GAME OVER'
@@ -134,6 +138,16 @@ function updateScore() {
 //     scoreParent.classList.add('scale')
 //   }, 100)
 // }
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -173,6 +187,45 @@ let flame: PIXI.AnimatedSprite | null = null
 let isRocketMoving = false
 let background: PIXI.Container<PIXI.DisplayObject> | null = null
 let trail: PIXI.Container<PIXI.DisplayObject> | null = null
+
+
+// sounds
+var constraints = { audio: true } // add video constraints if required
+
+navigator.mediaDevices.getUserMedia(constraints)
+  .then((stream) => {
+
+    addAudios()
+
+  })
+
+addAudios()
+function addAudios() {
+  sound.add('thrust', 'http://localhost:5173/audio/thrust.mp3')
+  sound.add('explosion', 'http://localhost:5173/audio/explosion.mp3')
+  sound.add('gameover', 'http://localhost:5173/audio/gameover.mp3')
+}
+
+function playEngineSound(isPlaying = true) {
+  if (isPlaying) {
+    sound.play('thrust', { loop: true })
+  } else {
+    sound.stop('thrust')
+  }
+
+}
+
+
+function playExplosionSound() {
+  sound.play('explosion')
+}
+
+
+function playGameOverSound() {
+  sound.play('gameover', { volume: 0.1 })
+}
+
+
 
 // const rocketAnimation = 1
 // const rocketAnimationMaxDis = 30
