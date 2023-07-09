@@ -98,7 +98,6 @@ function toggleContainer() {
 let score = 0
 let isUpdateAllowed = false
 let isRocketDestroyed = false
-const scoreParent = document.querySelector('#canvas-container h2') as HTMLElement
 const scoreElement = document.querySelector('#canvas-container h2 .left') as HTMLElement
 
 
@@ -124,7 +123,7 @@ function updateScore() {
   } 
 
   if (isRocketDestroyed && isUpdateAllowed == false) {
-    scoreParent.className = 'red'
+    gameStatusText!!.innerHTML = 'GAME OVER'
   }
 
 }
