@@ -158,6 +158,11 @@ function updateScore() {
 
 
 const canvasContainer = document.querySelector('#canvas-container') as HTMLDivElement
+const audioButton = document.querySelector('#canvas-container input') as HTMLInputElement;
+
+audioButton.addEventListener('change', function(){
+  playEngineSound()
+})
 
 const app = new PIXI.Application({
   antialias: true,
@@ -194,12 +199,10 @@ var constraints = { audio: true } // add video constraints if required
 
 navigator.mediaDevices.getUserMedia(constraints)
   .then((stream) => {
-
     addAudios()
-
   })
 
-addAudios()
+
 function addAudios() {
   sound.add('thrust', 'http://localhost:5173/audio/thrust.mp3')
   sound.add('explosion', 'http://localhost:5173/audio/explosion.mp3')
@@ -207,7 +210,8 @@ function addAudios() {
 }
 
 function playEngineSound(isPlaying = true) {
-  if (isPlaying) {
+
+  if (isPlaying && audioButton.checked ) {
     sound.play('thrust', { loop: true })
   } else {
     sound.stop('thrust')
@@ -217,12 +221,14 @@ function playEngineSound(isPlaying = true) {
 
 
 function playExplosionSound() {
+  if(audioButton.checked == false) return
   sound.play('explosion')
 }
 
 
 function playGameOverSound() {
-  sound.play('gameover', { volume: 0.1 })
+  if(audioButton.checked == false) return
+  sound.play('gameover', { volume: 0.05 })
 }
 
 
