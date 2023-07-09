@@ -40,6 +40,7 @@ let progressCount = 0;
   score = 0
   isProgressing = true
   progressCount = 0
+  isUpdateAllowed = false
   toggleContainer()
   restart(20)
   playEngineSound(true)
