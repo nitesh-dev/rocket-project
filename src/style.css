@@ -69,11 +69,18 @@ body {
   opacity: 0;
 }
 
-
-
-
 #canvas-container .hide{
   display: none;
+}
+
+#canvas-container>img{
+  width: 100px;
+  height: auto;
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  top: 0;
+  translate: -50% 0;
 }
 
 
