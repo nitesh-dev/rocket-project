@@ -35,6 +35,7 @@ const gameStatusText = document.querySelector('#canvas-container .game-status h3
 let isProgressing = false;
 toggleContainer()
 let progressCount = 0;
+let backgroundTimeout = 0;
 
 (document.querySelector('#restart') as HTMLButtonElement).addEventListener('click', function () {
   score = 0
@@ -47,18 +48,28 @@ let progressCount = 0;
   gameStatusText!!.innerHTML= ''
   toggleContainer()
   restart(20)
-  playBackgroundSound(true)
   playIgnitionSound()
+
+  //clear previous playing music
+  playBackgroundSound(false)
+  clearTimeout(backgroundTimeout)
+
+  //playing background sound after 9 seconds
+  backgroundTimeout = setTimeout(() => {playBackgroundSound(true)}, 9000);
 });
 
 
 (document.querySelector('#destroy') as HTMLButtonElement).addEventListener('click', function () {
   isUpdateAllowed = false
-  isRocketDestroyed = true
   playExplosionSound()
-  playGameOverSound()
   playBackgroundSound(false)
   destroyRocket()
+
+  // show game over after some delay
+  setTimeout(()=>{
+    isRocketDestroyed = true
+    playGameOverSound()
+  }, 1000)
 });
 
 setInterval(updateScore, 250);
@@ -279,6 +290,7 @@ function playGameOverSound() {
 }
 
 function playIgnitionSound() {
+  sound.stop('ignition')
   if(audioButton.checked == false) return
   sound.play('ignition', { volume: 0.1 })
 }
@@ -383,7 +395,7 @@ async function destroyRocket() {
 }
 
 async function createBlast() {
-  const scale = 0.3
+  const scale = 0.5
   const textures = Array<PIXI.Texture<PIXI.Resource>>();
 
   for (const url of blastImages) {
