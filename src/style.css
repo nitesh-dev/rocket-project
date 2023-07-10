@@ -58,8 +58,8 @@ body {
   padding-right: 3px;
 }
 
-#canvas-container .loader span.visible{
-  opacity: 1;
+#canvas-container .visible{
+  opacity: 1 !important;
 }
 
 #canvas-container .loader span{
@@ -137,6 +137,7 @@ body {
   color: #cdf425;
   text-align: center;
   margin: 0;
+  opacity: 0;
 }
 
 #canvas-container h2 .left {
@@ -146,7 +147,7 @@ body {
 }
 
 
-#canvas-container .scale {
+#canvas-container .animation {
   animation: scale-animation 1.5s;
 
 }
@@ -162,15 +163,20 @@ body {
 
 @keyframes scale-animation {
   0% {
-    scale: 1
+    opacity: 0;
+    
   }
 
-  50% {
-    scale: 1.5
+  20%{
+    opacity: 1;
+  }
+
+  80% {
+    opacity: 1;
   }
 
   100% {
-    scale: 1
+    opacity: 0;
   }
 }
 

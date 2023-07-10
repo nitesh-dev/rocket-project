@@ -41,6 +41,9 @@ let progressCount = 0;
   isProgressing = true
   progressCount = 0
   isUpdateAllowed = false
+  isRocketDestroyed = false
+  gameStatusText!!.className = ''
+  gameStatusText!!.innerHTML= ''
   toggleContainer()
   restart(20)
   playEngineSound(true)
@@ -110,6 +113,8 @@ const scoreElement = document.querySelector('#canvas-container h2 .left') as HTM
 const hypeValue = [3, 5, 8, 10, 15, 20, 25, 35, 50, 75, 100, 300, 500, 750, 1000]
 const hypeNames = ['NOT BAD', 'WOW', 'EXCELLENT', 'IMPRESSIVE', 'MARVELOUS', 'INCREDIBLE', 'SENSATIONAL', 'UNSTOPPABLE', 'DIVINE', 'STELLAR', 'REVOLUTIONARY', 'LEGENDARY', 'PHENOMENAL', 'OUT OF THE WORLD', 'GODLIKE']
 
+let activeHype = ''
+
 function updateScore() {
 
   if (isUpdateAllowed == true) {
@@ -119,16 +124,44 @@ function updateScore() {
 
   scoreElement.innerText = score.toString()
 
-  for (let index = 0; index < hypeValue.length; index++) {
-    if (score < hypeValue[index]) {
-      gameStatusText!!.innerHTML = hypeNames[index]
+  for (let index = 0; index < hypeValue.length - 1; index++) {
+    if (hypeValue[index] <= score && score < hypeValue[index + 1]) {
+
+      if(activeHype != hypeNames[index]){
+        activeHype = hypeNames[index]
+        gameStatusText!!.innerHTML = hypeNames[index]
+        gameStatusText!!.classList.add('animation')
+
+        // remove scale animation after completed
+        setTimeout(()=>{
+          gameStatusText!!.classList.remove('animation')
+        }, 1600)
+
+      }
+      
       break
+    }
+
+    if(score > 1000){
+      const last = hypeNames[hypeNames.length - 1]
+      if(activeHype != last){
+        activeHype = last
+        gameStatusText!!.innerHTML = last
+        gameStatusText!!.classList.add('animation')
+
+        // remove scale animation after completed
+        setTimeout(()=>{
+          gameStatusText!!.classList.remove('animation')
+        }, 1600)
+
+      }
     }
 
   }
 
   if (isRocketDestroyed && isUpdateAllowed == false) {
     gameStatusText!!.innerHTML = 'GAME OVER'
+    gameStatusText!!.className = 'visible'
   }
 
 }
