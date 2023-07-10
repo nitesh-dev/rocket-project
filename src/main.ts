@@ -216,7 +216,7 @@ let time = 0
 
 const backgroundSpeed = 80
 let backgroundHeight = 0
-const offset = 60
+const offset = 170
 const start = new PIXI.Point(offset, app.screen.bottom - offset)
 const control = new PIXI.Point(app.screen.right - offset, app.screen.bottom - offset)
 const end = new PIXI.Point(app.screen.right - offset, offset)
@@ -346,11 +346,11 @@ function startRocket() {
 async function createRocket(image: string) {
   const container = new PIXI.Container();
 
-  flame = await rocketFlame(0.25)
+  flame = await rocketFlame(0.7)
 
   const gameObject = PIXI.Sprite.from(image)
-  gameObject.scale.x = 0.15
-  gameObject.scale.y = 0.15
+  gameObject.scale.x = 0.3
+  gameObject.scale.y = 0.3
 
   // center the sprite's anchor point
   gameObject.anchor.set(0.5)
@@ -469,8 +469,8 @@ async function rocketFlame(scale: number) {
   // Set animation properties
   animatedSprite.animationSpeed = 0.2;
   animatedSprite.loop = true;
+  animatedSprite.anchor.set(1.19, 0.5)
 
-  animatedSprite.anchor.set(1.35, 0.5)
   // Start the animation
   animatedSprite.play();
 
