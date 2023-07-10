@@ -444,8 +444,8 @@ async function createBackground(image: string) {
 
 function trailContainer() {
   const container = new PIXI.Container();
-  container.addChild(drawRocketTail(15, 0xf3e300, 0.15))
-  container.addChild(drawRocketTail(2, 0xf3e300, 1))
+  container.addChild(drawRocketTail(20, 0xf3e300, 0.15))
+  container.addChild(drawRocketTail(4, 0xf3e300, 1))
   return container
 }
 
@@ -524,7 +524,7 @@ function main(delta: number) {
   if (trail != null) {
     trail.mask = new PIXI.Graphics()
       .beginFill(0x000000)
-      .drawRect(offset, rocket.y - 15, rocket.x - rocket.width / 4, app.screen.bottom)
+      .drawRect(offset, rocket.y - 15, rocket.x - rocket.width / 2, app.screen.bottom)
       .endFill();
   }
 }
