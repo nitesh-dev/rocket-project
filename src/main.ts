@@ -46,7 +46,8 @@ let progressCount = 0;
   gameStatusText!!.innerHTML= ''
   toggleContainer()
   restart(20)
-  playEngineSound(true)
+  playBackgroundSound(true)
+  playIgnitionSound()
 });
 
 
@@ -55,7 +56,7 @@ let progressCount = 0;
   isRocketDestroyed = true
   playExplosionSound()
   playGameOverSound()
-  playEngineSound(false)
+  playBackgroundSound(false)
   destroyRocket()
 });
 
@@ -195,7 +196,7 @@ const canvasContainer = document.querySelector('#canvas-container') as HTMLDivEl
 const audioButton = document.querySelector('#canvas-container input') as HTMLInputElement;
 
 audioButton.addEventListener('change', function(){
-  playEngineSound()
+  playBackgroundSound()
 })
 
 const app = new PIXI.Application({
@@ -238,20 +239,20 @@ navigator.mediaDevices.getUserMedia(constraints)
 
 
 function addAudios() {
-  sound.add('thrust', 'http://localhost:5173/audio/thrust.mp3')
+  sound.add('ignition', 'http://localhost:5173/audio/ignition.mp3')
   sound.add('explosion', 'http://localhost:5173/audio/explosion.mp3')
   sound.add('gameover', 'http://localhost:5173/audio/gameover.mp3')
+  sound.add('background', 'http://localhost:5173/audio/background.mp3')
 }
 
-function playEngineSound(isPlaying = true) {
+function playBackgroundSound(isPlaying = true) {
 
   if(isRocketDestroyed) isPlaying = false
+  sound.stop('background')
 
   if (isPlaying && audioButton.checked ) {
-    sound.play('thrust', { loop: true })
-  } else {
-    sound.stop('thrust')
-  }
+    sound.play('background', { loop: true, volume:0.1 })
+  } 
 
 }
 
@@ -265,6 +266,11 @@ function playExplosionSound() {
 function playGameOverSound() {
   if(audioButton.checked == false) return
   sound.play('gameover', { volume: 0.05 })
+}
+
+function playIgnitionSound() {
+  if(audioButton.checked == false) return
+  sound.play('ignition', { volume: 0.1 })
 }
 
 
