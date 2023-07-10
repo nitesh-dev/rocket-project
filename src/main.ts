@@ -38,6 +38,7 @@ let progressCount = 0;
 
 (document.querySelector('#restart') as HTMLButtonElement).addEventListener('click', function () {
   score = 0
+  scoreUpdateSpeed = 0.4
   isProgressing = true
   progressCount = 0
   isUpdateAllowed = false
@@ -103,7 +104,7 @@ function toggleContainer() {
 
 }
 
-
+let scoreUpdateSpeed = 0.4
 let score = 0
 let isUpdateAllowed = false
 let isRocketDestroyed = false
@@ -119,7 +120,7 @@ let activeHype = ''
 function updateScore() {
 
   if (isUpdateAllowed == true) {
-    score += Math.random() * 0.4
+    score += Math.random() * scoreUpdateSpeed
     score = Math.round(score * 100) / 100       // rounding
   }
 
@@ -129,6 +130,15 @@ function updateScore() {
     if (hypeValue[index] <= score && score < hypeValue[index + 1]) {
 
       if(activeHype != hypeNames[index]){
+        
+        // increase score update speed
+        if(index == 3) scoreUpdateSpeed = 0.5
+        if(index == 5) scoreUpdateSpeed = 0.6
+        if(index == 7) scoreUpdateSpeed = 1
+        if(index == 9) scoreUpdateSpeed = 2
+        if(index == 11) scoreUpdateSpeed = 5
+        if(index == 12) scoreUpdateSpeed = 10
+
         activeHype = hypeNames[index]
         gameStatusText!!.innerHTML = hypeNames[index]
         gameStatusText!!.classList.add('animation')
@@ -429,11 +439,12 @@ async function createBackground(image: string) {
 
   // calculating scale factor
   let scale = 1
-  if (app.screen.width > app.screen.height) {
-    scale = app.screen.width / container.width
-  } else {
-    scale = app.screen.height / container.height
-  }
+  scale = app.screen.width / container.width
+  // if (app.screen.width > app.screen.height) {
+    
+  // } else {
+  //   scale = app.screen.height / container.height
+  // }
 
   container.scale.set(scale)
   backgroundHeight = container.height
@@ -464,7 +475,6 @@ async function rocketFlame(scale: number) {
 
 
   const animatedSprite = new PIXI.AnimatedSprite(textures);
-
 
   // Set animation properties
   animatedSprite.animationSpeed = 0.2;
