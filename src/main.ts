@@ -245,6 +245,8 @@ function addAudios() {
 
 function playEngineSound(isPlaying = true) {
 
+  if(isRocketDestroyed) isPlaying = false
+
   if (isPlaying && audioButton.checked ) {
     sound.play('thrust', { loop: true })
   } else {
