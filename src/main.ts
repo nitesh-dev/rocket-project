@@ -254,16 +254,16 @@ let trail: PIXI.Container<PIXI.DisplayObject> | null = null
 var constraints = { audio: true } // add video constraints if required
 
 navigator.mediaDevices.getUserMedia(constraints)
-  .then((stream) => {
+  .then(() => {
     addAudios()
   })
 
 
 function addAudios() {
-  sound.add('ignition', 'http://localhost:5173/audio/ignition.mp3')
-  sound.add('explosion', 'http://localhost:5173/audio/explosion.mp3')
-  sound.add('gameover', 'http://localhost:5173/audio/gameover.mp3')
-  sound.add('background', 'http://localhost:5173/audio/background.mp3')
+  sound.add('ignition', './audio/ignition.mp3')
+  sound.add('explosion', './audio/explosion.mp3')
+  sound.add('gameover', './audio/gameover.mp3')
+  sound.add('background', './audio/background.mp3')
 }
 
 function playBackgroundSound(isPlaying = true) {
@@ -300,19 +300,19 @@ function playIgnitionSound() {
 // const rocketAnimation = 1
 // const rocketAnimationMaxDis = 30
 
-setup('http://localhost:5173/space.jpg', 'http://localhost:5173/rocket.png', [
-  'http://localhost:5173/blast/blast1.png',
-  'http://localhost:5173/blast/blast2.png',
-  'http://localhost:5173/blast/blast3.png',
-  'http://localhost:5173/blast/blast4.png',
+setup('./space.jpg', './rocket.png', [
+  './blast/blast1.png',
+  './blast/blast2.png',
+  './blast/blast3.png',
+  './blast/blast4.png',
 ], [
-  'http://localhost:5173/flame/flame1.png',
-  'http://localhost:5173/flame/flame2.png',
-  'http://localhost:5173/flame/flame3.png',
-  'http://localhost:5173/flame/flame4.png',
-  'http://localhost:5173/flame/flame5.png',
-  'http://localhost:5173/flame/flame6.png',
-  'http://localhost:5173/flame/flame7.png',
+  './flame/flame1.png',
+  './flame/flame2.png',
+  './flame/flame3.png',
+  './flame/flame4.png',
+  './flame/flame5.png',
+  './flame/flame6.png',
+  './flame/flame7.png',
 ])
 
 let rocketImage = ''
@@ -552,9 +552,9 @@ function main(delta: number) {
 }
 
 
-function easingFunction(progress: number) {
-  return Math.sin(progress * Math.PI * 2);
-}
+// function easingFunction(progress: number) {
+//   return Math.sin(progress * Math.PI * 2);
+// }
 
 function getCurvePoint(t: number) {
   const x = (1 - t) * (1 - t) * start.x + 2 * (1 - t) * t * control.x + t * t * end.x;
