@@ -46,6 +46,7 @@ body {
 #canvas-container .game-loading p{
   color: #cdf425;
   font-size: 30px;
+  text-align: center;
 }
 
 #canvas-container .loader{
@@ -136,7 +137,7 @@ body {
 
 #canvas-container h3 {
   font-weight: normal;
-  font-size: 64px;
+  font-size: 40px;
   color: #cdf425;
   text-align: center;
   margin: 0;
@@ -188,4 +189,37 @@ body {
 
 #color {
   background-color: #f3e30013;
+}
+
+
+
+/* ------------------- making responsive -------------------- */
+@media only screen and (max-width: 800px) {
+
+  #canvas-container>img{
+    width: 200px;
+    top: -40px;
+  }
+  
+  #canvas-container .loader{
+    height: 30px;
+  }
+
+  #canvas-container .loader span{
+    width: 10px;
+  }
+
+  #canvas-container h2 .left, #canvas-container h2 .right {
+    font-size: 40px !important;
+  }
+
+  #canvas-container .game-loading p{
+    font-size: 24px;
+  }
+
+  #canvas-container h3 {
+    font-size: 30px;
+  }
+  
+
 }
