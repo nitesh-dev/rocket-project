@@ -188,6 +188,9 @@ function updateScore() {
 
 }
 
+
+window.addEventListener('resize', updateCanvasSize)
+
 // function showScaleAnimation() {
 //   scoreParent.classList.remove('scale')
 //   setTimeout(() => {
@@ -238,9 +241,9 @@ let time = 0
 const backgroundSpeed = 80
 let backgroundHeight = 0
 const offset = 170
-const start = new PIXI.Point(offset, app.screen.bottom - offset)
-const control = new PIXI.Point(app.screen.right - offset, app.screen.bottom - offset)
-const end = new PIXI.Point(app.screen.right - offset, offset)
+let start = new PIXI.Point(offset, app.screen.bottom - offset)
+let control = new PIXI.Point(app.screen.right - offset, app.screen.bottom - offset)
+let end = new PIXI.Point(app.screen.right - offset, offset)
 
 let rocket: PIXI.Container<PIXI.DisplayObject> | null = null
 let blast: PIXI.AnimatedSprite | null = null
@@ -249,6 +252,24 @@ let isRocketMoving = false
 let background: PIXI.Container<PIXI.DisplayObject> | null = null
 let trail: PIXI.Container<PIXI.DisplayObject> | null = null
 
+function updateCanvasSize(){
+  console.log('5')
+  resize()
+  start = new PIXI.Point(offset, app.screen.bottom - offset)
+  control = new PIXI.Point(app.screen.right - offset, app.screen.bottom - offset)
+  end = new PIXI.Point(app.screen.right - offset, offset)
+
+  // redraw trail
+
+  if(trail == null) return
+  app.stage.removeChild(trail)     // remove previous trail
+  trail = trailContainer()
+  app.stage.addChildAt(trail, 1)
+}
+
+function resize() {
+  app.renderer.resize(canvasContainer.clientWidth, canvasContainer.clientHeight);
+}
 
 // sounds
 var constraints = { audio: true } // add video constraints if required
@@ -326,6 +347,8 @@ async function setup(spaceImageUrl: string, rocketImageUrl: string, blastImagesU
   blastImages = blastImagesUrl
   flameImages = flameImagesUrl
 
+  // skip if trail already rendered
+  if(trail != null) return
   trail = trailContainer()
   app.stage.addChild(trail);
 }
