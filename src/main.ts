@@ -451,12 +451,12 @@ async function createBackground(image: string) {
 
   // calculating scale factor
   let scale = 1
-  scale = app.screen.width / container.width
-  // if (app.screen.width > app.screen.height) {
-    
-  // } else {
-  //   scale = app.screen.height / container.height
-  // }
+ 
+  if (app.screen.width > app.screen.height) {
+    scale = app.screen.width / container.width
+  } else {
+    scale = app.screen.height / container.width 
+  }
 
   container.scale.set(scale)
   backgroundHeight = container.height
