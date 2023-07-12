@@ -29,6 +29,10 @@ body {
 
 }
 
+#canvas-container>div{
+  height: 100%;
+}
+
 #canvas-container * {
   font-family: Furore;
 }
@@ -84,7 +88,7 @@ body {
   display: none;
 }
 
-#canvas-container>img{
+#canvas-container>div>img{
   width: 300px;
   height: auto;
   position: absolute;
@@ -203,7 +207,7 @@ body {
 /* ------------------- making responsive -------------------- */
 @media only screen and (max-width: 800px) {
 
-  #canvas-container>img{
+  #canvas-container>div>img{
     width: 200px;
     top: -40px;
   }
