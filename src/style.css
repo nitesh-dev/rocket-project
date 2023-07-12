@@ -31,10 +31,17 @@ body {
 
 #canvas-container>div{
   height: 100%;
+  width: 100%;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
 }
 
 #canvas-container * {
   font-family: Furore;
+  box-sizing: border-box;
 }
 
 #canvas-container canvas {
@@ -45,11 +52,11 @@ body {
 }
 
 #canvas-container .ui-container {
-  position: absolute;
+  /* position: absolute;
   top: 50%;
   left: 50%;
   translate: -50% -50%;
-  z-index: 1;
+  z-index: 1; */
 }
 
 
