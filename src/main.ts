@@ -372,7 +372,7 @@ let rocketImage = ''
 let blastImages = Array<string>()
 let flameImages = Array<string>()
 
-await setup('./space.jpg', './rocket.png', [
+setup('./space.jpg', './rocket.png', [
   './blast/blast1.png',
   './blast/blast2.png',
   './blast/blast3.png',
