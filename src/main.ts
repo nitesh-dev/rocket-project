@@ -144,9 +144,9 @@ function updateScore() {
         
         // increase score update speed
         if(index == 3) scoreUpdateSpeed = 0.5
-        if(index == 5) scoreUpdateSpeed = 0.6
-        if(index == 7) scoreUpdateSpeed = 1
-        if(index == 9) scoreUpdateSpeed = 2
+        if(index == 5) scoreUpdateSpeed = 0.7
+        if(index == 7) scoreUpdateSpeed = 1.5
+        if(index == 9) scoreUpdateSpeed = 2.5
         if(index == 11) scoreUpdateSpeed = 5
         if(index == 12) scoreUpdateSpeed = 10
 
@@ -274,8 +274,10 @@ function resize() {
 // sounds
 var constraints = { audio: true } // add video constraints if required
 
+let isPermissionAllowed = false
 navigator.mediaDevices.getUserMedia(constraints)
   .then(() => {
+    isPermissionAllowed = true;
     addAudios()
   })
 
@@ -288,6 +290,7 @@ function addAudios() {
 }
 
 function playBackgroundSound(isPlaying = true) {
+  if(isPermissionAllowed == false) return
 
   if(isRocketDestroyed) isPlaying = false
   sound.stop('background')
@@ -300,17 +303,20 @@ function playBackgroundSound(isPlaying = true) {
 
 
 function playExplosionSound() {
+  if(isPermissionAllowed == false) return
   if(audioButton.checked == false) return
   sound.play('explosion')
 }
 
 
 function playGameOverSound() {
+  if(isPermissionAllowed == false) return
   if(audioButton.checked == false) return
   sound.play('gameover', { volume: 0.05 })
 }
 
 function playIgnitionSound() {
+  if(isPermissionAllowed == false) return
   sound.stop('ignition')
   if(audioButton.checked == false) return
   sound.play('ignition', { volume: 0.1 })
