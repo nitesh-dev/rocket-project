@@ -45,7 +45,7 @@ let backgroundTimeout = 0;
   isUpdateAllowed = false
   isRocketDestroyed = false
   gameStatusText!!.className = ''
-  gameStatusText!!.innerHTML= ''
+  gameStatusText!!.innerHTML = ''
   toggleContainer()
   restart(20)
   playIgnitionSound()
@@ -55,7 +55,7 @@ let backgroundTimeout = 0;
   clearTimeout(backgroundTimeout)
 
   //playing background sound after 9 seconds
-  backgroundTimeout = setTimeout(() => {playBackgroundSound(true)}, 9000);
+  backgroundTimeout = setTimeout(() => { playBackgroundSound(true) }, 9000);
 });
 
 
@@ -66,7 +66,7 @@ let backgroundTimeout = 0;
   destroyRocket()
 
   // show game over after some delay
-  setTimeout(()=>{
+  setTimeout(() => {
     isRocketDestroyed = true
     playGameOverSound()
   }, 1000)
@@ -140,39 +140,39 @@ function updateScore() {
   for (let index = 0; index < hypeValue.length - 1; index++) {
     if (hypeValue[index] <= score && score < hypeValue[index + 1]) {
 
-      if(activeHype != hypeNames[index]){
-        
+      if (activeHype != hypeNames[index]) {
+
         // increase score update speed
-        if(index == 3) scoreUpdateSpeed = 0.5
-        if(index == 5) scoreUpdateSpeed = 0.7
-        if(index == 7) scoreUpdateSpeed = 1.5
-        if(index == 9) scoreUpdateSpeed = 2.5
-        if(index == 11) scoreUpdateSpeed = 5
-        if(index == 12) scoreUpdateSpeed = 10
+        if (index == 3) scoreUpdateSpeed = 0.5
+        if (index == 5) scoreUpdateSpeed = 0.7
+        if (index == 7) scoreUpdateSpeed = 1.5
+        if (index == 9) scoreUpdateSpeed = 2.5
+        if (index == 11) scoreUpdateSpeed = 5
+        if (index == 12) scoreUpdateSpeed = 10
 
         activeHype = hypeNames[index]
         gameStatusText!!.innerHTML = hypeNames[index]
         gameStatusText!!.classList.add('animation')
 
         // remove scale animation after completed
-        setTimeout(()=>{
+        setTimeout(() => {
           gameStatusText!!.classList.remove('animation')
         }, 1600)
 
       }
-      
+
       break
     }
 
-    if(score > 1000){
+    if (score > 1000) {
       const last = hypeNames[hypeNames.length - 1]
-      if(activeHype != last){
+      if (activeHype != last) {
         activeHype = last
         gameStatusText!!.innerHTML = last
         gameStatusText!!.classList.add('animation')
 
         // remove scale animation after completed
-        setTimeout(()=>{
+        setTimeout(() => {
           gameStatusText!!.classList.remove('animation')
         }, 1600)
 
@@ -219,7 +219,7 @@ window.addEventListener('resize', updateCanvasSize)
 const canvasContainer = document.querySelector('#canvas-container') as HTMLDivElement
 const audioButton = document.querySelector('#canvas-container input') as HTMLInputElement;
 
-audioButton.addEventListener('change', function(){
+audioButton.addEventListener('change', function () {
   playBackgroundSound()
 })
 
@@ -252,8 +252,13 @@ let isRocketMoving = false
 let background: PIXI.Container<PIXI.DisplayObject> | null = null
 let trail: PIXI.Container<PIXI.DisplayObject> | null = null
 
-function updateCanvasSize(){
-  console.log('5')
+//loading all textures
+let backgroundTexture: any = null
+const flameTextures = Array<PIXI.Texture<PIXI.Resource>>();
+const blastTextures = Array<PIXI.Texture<PIXI.Resource>>();
+
+function updateCanvasSize() {
+
   resize()
   start = new PIXI.Point(offset, app.screen.bottom - offset)
   control = new PIXI.Point(app.screen.right - offset, app.screen.bottom - offset)
@@ -261,7 +266,7 @@ function updateCanvasSize(){
 
   // redraw trail
 
-  if(trail == null) return
+  if (trail == null) return
   app.stage.removeChild(trail)     // remove previous trail
   trail = trailContainer()
   app.stage.addChildAt(trail, 1)
@@ -283,42 +288,55 @@ navigator.mediaDevices.getUserMedia(constraints)
 
 
 function addAudios() {
-  sound.add('ignition', './audio/ignition.mp3')
-  sound.add('explosion', './audio/explosion.mp3')
-  sound.add('gameover', './audio/gameover.mp3')
-  sound.add('background', './audio/background.mp3')
+  sound.add('ignition', {
+    url: './audio/ignition.mp3',
+    preload: true
+  })
+  sound.add('explosion', {
+    url: './audio/explosion.mp3',
+    preload: true
+  })
+  sound.add('gameover', {
+    url: './audio/gameover.mp3',
+    preload: true
+  })
+  sound.add('background', {
+    url: './audio/background.mp3',
+    preload: true
+  })
+
 }
 
 function playBackgroundSound(isPlaying = true) {
-  if(isPermissionAllowed == false) return
+  if (isPermissionAllowed == false) return
 
-  if(isRocketDestroyed) isPlaying = false
+  if (isRocketDestroyed) isPlaying = false
   sound.stop('background')
 
-  if (isPlaying && audioButton.checked ) {
-    sound.play('background', { loop: true, volume:0.1 })
-  } 
+  if (isPlaying && audioButton.checked) {
+    sound.play('background', { loop: true, volume: 0.1 })
+  }
 
 }
 
 
 function playExplosionSound() {
-  if(isPermissionAllowed == false) return
-  if(audioButton.checked == false) return
+  if (isPermissionAllowed == false) return
+  if (audioButton.checked == false) return
   sound.play('explosion')
 }
 
 
 function playGameOverSound() {
-  if(isPermissionAllowed == false) return
-  if(audioButton.checked == false) return
+  if (isPermissionAllowed == false) return
+  if (audioButton.checked == false) return
   sound.play('gameover', { volume: 0.05 })
 }
 
 function playIgnitionSound() {
-  if(isPermissionAllowed == false) return
+  if (isPermissionAllowed == false) return
   sound.stop('ignition')
-  if(audioButton.checked == false) return
+  if (audioButton.checked == false) return
   sound.play('ignition', { volume: 0.1 })
 }
 
@@ -326,8 +344,11 @@ function playIgnitionSound() {
 
 // const rocketAnimation = 1
 // const rocketAnimationMaxDis = 30
+let rocketImage = ''
+let blastImages = Array<string>()
+let flameImages = Array<string>()
 
-setup('./space.jpg', './rocket.png', [
+await setup('./space.jpg', './rocket.png', [
   './blast/blast1.png',
   './blast/blast2.png',
   './blast/blast3.png',
@@ -342,22 +363,42 @@ setup('./space.jpg', './rocket.png', [
   './flame/flame7.png',
 ])
 
-let rocketImage = ''
-let blastImages = Array<string>()
-let flameImages = Array<string>()
 
 async function setup(spaceImageUrl: string, rocketImageUrl: string, blastImagesUrl: Array<string>, flameImagesUrl: Array<string>) {
 
-  background = await createBackground(spaceImageUrl)
+  // loading all textures
   rocketImage = rocketImageUrl
   blastImages = blastImagesUrl
   flameImages = flameImagesUrl
+  await loadAllTextures(spaceImageUrl)
+
+  background = await createBackground()
+
 
   // skip if trail already rendered
-  if(trail != null) return
+  if (trail != null) return
   trail = trailContainer()
   app.stage.addChild(trail);
 }
+
+
+
+async function loadAllTextures(spaceImage: string) {
+
+  backgroundTexture = await PIXI.Assets.load(spaceImage)
+
+  for (const url of flameImages) {
+    const texture = await PIXI.Assets.load(url)
+    flameTextures.push(texture)
+  }
+
+  for (const url of blastImages) {
+    const texture = await PIXI.Assets.load(url)
+    blastTextures.push(texture)
+  }
+
+}
+
 
 
 
@@ -425,15 +466,8 @@ async function destroyRocket() {
 
 async function createBlast() {
   const scale = 0.5
-  const textures = Array<PIXI.Texture<PIXI.Resource>>();
 
-  for (const url of blastImages) {
-    const texture = await PIXI.Assets.load(url)
-    textures.push(texture)
-  }
-
-
-  const animatedSprite = new PIXI.AnimatedSprite(textures)
+  const animatedSprite = new PIXI.AnimatedSprite(blastTextures)
 
   // Set animation properties
   animatedSprite.animationSpeed = 0.1;
@@ -466,12 +500,11 @@ function drawRocketTail(width: number, color: number, alpha: number) {
 }
 
 
-async function createBackground(image: string) {
+async function createBackground() {
 
   const container = new PIXI.Container();
-  const texture = await PIXI.Assets.load(image)
-  const background1 = PIXI.Sprite.from(texture);
-  const background2 = PIXI.Sprite.from(texture);
+  const background1 = PIXI.Sprite.from(backgroundTexture!!);
+  const background2 = PIXI.Sprite.from(backgroundTexture!!);
 
   container.addChild(background1);
   container.addChild(background2)
@@ -480,11 +513,11 @@ async function createBackground(image: string) {
 
   // calculating scale factor
   let scale = 1
- 
+
   if (app.screen.width > app.screen.height) {
     scale = app.screen.width / container.width
   } else {
-    scale = app.screen.height / container.width 
+    scale = app.screen.height / container.width
   }
 
   container.scale.set(scale)
@@ -503,19 +536,8 @@ function trailContainer() {
 
 
 async function rocketFlame(scale: number) {
-  const textures = Array<PIXI.Texture<PIXI.Resource>>();
 
-  for (const url of flameImages) {
-    const texture = await PIXI.Assets.load(url)
-    textures.push(texture)
-  }
-
-  // flameImages.forEach(url => {
-  //   textures.push(PIXI.Texture.from(url))
-  // });
-
-
-  const animatedSprite = new PIXI.AnimatedSprite(textures);
+  const animatedSprite = new PIXI.AnimatedSprite(flameTextures);
 
   // Set animation properties
   animatedSprite.animationSpeed = 0.2;
