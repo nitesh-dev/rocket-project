@@ -240,7 +240,7 @@ let time = 0
 
 const backgroundSpeed = 80
 let backgroundHeight = 0
-const offset = 170
+let offset = 170
 let start = new PIXI.Point(offset, app.screen.bottom - offset)
 let control = new PIXI.Point(app.screen.right - offset, app.screen.bottom - offset)
 let end = new PIXI.Point(app.screen.right - offset, offset)
@@ -256,6 +256,30 @@ let trail: PIXI.Container<PIXI.DisplayObject> | null = null
 let backgroundTexture: any = null
 const flameTextures = Array<PIXI.Texture<PIXI.Resource>>();
 const blastTextures = Array<PIXI.Texture<PIXI.Resource>>();
+
+
+
+//  -------------------------------------------- Media query in js ------------------------------------
+let isSmallerDevice = false
+function onMediaQuery(x: any) {
+  if (x.matches) { // If media query matches
+    isSmallerDevice = true
+  } else {
+    isSmallerDevice = false
+  }
+}
+
+var media = window.matchMedia("(max-width: 800px)")
+onMediaQuery(media)
+media.addEventListener('change', onMediaQuery)
+
+
+
+
+
+
+
+
 
 function updateCanvasSize() {
 
@@ -379,6 +403,14 @@ async function setup(spaceImageUrl: string, rocketImageUrl: string, blastImagesU
   if (trail != null) return
   trail = trailContainer()
   app.stage.addChild(trail);
+
+  if (isSmallerDevice) {
+    offset = 60
+  } else {
+    offset = 170
+  }
+
+  updateCanvasSize()
 }
 
 
@@ -437,12 +469,17 @@ function startRocket() {
 
 async function createRocket(image: string) {
   const container = new PIXI.Container();
-
-  flame = await rocketFlame(0.7)
-
   const gameObject = PIXI.Sprite.from(image)
-  gameObject.scale.x = 0.3
-  gameObject.scale.y = 0.3
+
+  if (isSmallerDevice) {
+    flame = await rocketFlame(0.4)
+    gameObject.scale.x = 0.2
+    gameObject.scale.y = 0.2
+  } else {
+    flame = await rocketFlame(0.7)
+    gameObject.scale.x = 0.3
+    gameObject.scale.y = 0.3
+  }
 
   // center the sprite's anchor point
   gameObject.anchor.set(0.5)
@@ -465,7 +502,13 @@ async function destroyRocket() {
 }
 
 async function createBlast() {
-  const scale = 0.5
+  let scale = 0
+  if (isSmallerDevice) {
+    scale = 0.35
+  } else {
+    scale = 0.5
+  }
+
 
   const animatedSprite = new PIXI.AnimatedSprite(blastTextures)
 
@@ -529,8 +572,14 @@ async function createBackground() {
 
 function trailContainer() {
   const container = new PIXI.Container();
-  container.addChild(drawRocketTail(20, 0xf3e300, 0.15))
-  container.addChild(drawRocketTail(4, 0xf3e300, 1))
+  if (isSmallerDevice) {
+    container.addChild(drawRocketTail(15, 0xf3e300, 0.15))
+    container.addChild(drawRocketTail(2, 0xf3e300, 1))
+  } else {
+    container.addChild(drawRocketTail(20, 0xf3e300, 0.15))
+    container.addChild(drawRocketTail(4, 0xf3e300, 1))
+  }
+
   return container
 }
 
@@ -542,7 +591,13 @@ async function rocketFlame(scale: number) {
   // Set animation properties
   animatedSprite.animationSpeed = 0.2;
   animatedSprite.loop = true;
-  animatedSprite.anchor.set(1.19, 0.5)
+
+  if (isSmallerDevice) {
+    animatedSprite.anchor.set(1.23, 0.5)
+  } else {
+    animatedSprite.anchor.set(1.19, 0.5)
+  }
+
 
   // Start the animation
   animatedSprite.play();
@@ -595,10 +650,19 @@ function main(delta: number) {
 
   // update train mask
   if (trail != null) {
-    trail.mask = new PIXI.Graphics()
-      .beginFill(0x000000)
-      .drawRect(offset, rocket.y - 15, rocket.x - rocket.width / 2, app.screen.bottom)
-      .endFill();
+
+    if (isSmallerDevice) {
+      trail.mask = new PIXI.Graphics()
+        .beginFill(0x000000)
+        .drawRect(offset, rocket.y - 15, rocket.x - rocket.width / 4, app.screen.bottom)
+        .endFill();
+    } else {
+      trail.mask = new PIXI.Graphics()
+        .beginFill(0x000000)
+        .drawRect(offset, rocket.y - 15, rocket.x - rocket.width / 2, app.screen.bottom)
+        .endFill();
+    }
+
   }
 }
 
